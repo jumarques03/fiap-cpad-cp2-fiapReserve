@@ -15,9 +15,9 @@ export default function Login() {
       <Text style={styles.subtitulo}>Sistema de reservas de salas</Text>
       <View style={styles.containerCredenciais}>
         
-        <Text style={styles.textoCredenciais}>RM ou Email</Text>
+        <Text style={styles.textoCredenciais}>RM ou E-mail</Text>
         <View style={styles.caixaInput}> 
-          <Text style={styles.textoInput}>Digite seu RM ou email</Text>
+          <Text style={styles.textoInput}>Digite seu RM ou e-mail</Text>
         </View>
         
         <Text style={styles.textoCredenciais}>Senha</Text>

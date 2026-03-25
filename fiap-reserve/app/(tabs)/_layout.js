@@ -4,27 +4,49 @@ import { SalasProvider } from '../../SalasContext';
 
 export default function Layout() {
   return (
-    // Dando acesso a todas as telas para o use Effectr
     <SalasProvider>
-      <Tabs screenOptions={{ tabBarActiveTintColor: '#F23064', tabBarStyle: {backgroundColor: "#262626"}, headerStyle: {backgroundColor: "#262626"}, headerTintColor: "#ffff", headerTitleStyle: {fontWeight: "bold"}}}>
-          <Tabs.Screen
-              name="salas"
-              options={{
-              title: 'Salas',
-              tabBarIcon: ({ color }) => <Ionicons name="business-outline" size={24} color={color} />}}
-          />
-          <Tabs.Screen
-              name="reservar"
-              options={{
-              title: 'Reservar',
-              tabBarIcon: ({ color }) => <Ionicons name="calendar-outline" size={24} color={color} />}}
-          />
-          <Tabs.Screen
-              name="minhas-reservas"
-              options={{
-              title: 'Minhas Reservas',
-              tabBarIcon: ({ color }) => <Ionicons name="list-outline" size={24} color={color} />}}
-          />
+      <Tabs
+        screenOptions={{
+          headerShown: false,
+          tabBarActiveTintColor: '#F23064', 
+          tabBarInactiveTintColor: '#FFFFFF',
+          tabBarStyle: {
+            backgroundColor: '#1a1a1a', 
+            borderTopWidth: 0,        
+            height: 60,               
+            paddingBottom: 8,
+          },
+        }}
+      >
+        <Tabs.Screen
+          name="salas"
+          options={{
+            title: 'Salas',
+            tabBarIcon: ({ color, focused }) => (
+              <Ionicons name={focused ? "grid" : "grid-outline"} size={24} color={color} />
+            ),
+          }}
+        />
+        
+        <Tabs.Screen
+          name="reservar"
+          options={{
+            title: 'Reservar',
+            tabBarIcon: ({ color, focused }) => (
+              <Ionicons name={focused ? "calendar" : "calendar-outline"} size={24} color={color} />
+            ),
+          }}
+        />
+        
+        <Tabs.Screen
+          name="minhas-reservas"
+          options={{
+            title: 'Minhas Reservas',
+            tabBarIcon: ({ color, focused }) => (
+              <Ionicons name={focused ? "list" : "list-outline"} size={24} color={color} />
+            ),
+          }}
+        />
       </Tabs>
     </SalasProvider>
   );

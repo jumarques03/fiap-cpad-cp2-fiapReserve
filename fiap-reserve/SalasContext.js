@@ -1,10 +1,9 @@
 import { createContext, useState } from "react";
 
-// Contexto
 export const SalasContext = createContext();
 
-// Provedor com a lista de salas 
 export function SalasProvider({ children }) {
+
     const [listaSalas, setListaSalas] = useState([
         { id: 1, nome: "Sala 101", texto: "Disponível hoje", disponivel: true },
         { id: 2, nome: "Sala 305", texto: "Disponível hoje", disponivel: true },
@@ -13,8 +12,22 @@ export function SalasProvider({ children }) {
         { id: 5, nome: "Sala 507", texto: "Disponível hoje", disponivel: true }
     ]);
 
+
+    const [reservas, setReservas] = useState([]);
+
+
+    const adicionarReserva = (novaReserva) => {
+        setReservas((listaAtual) => [novaReserva, ...listaAtual]);
+    };
+
     return (
-        <SalasContext.Provider value={{ listaSalas, setListaSalas }}>
+
+        <SalasContext.Provider value={{ 
+            listaSalas, 
+            setListaSalas, 
+            reservas, 
+            adicionarReserva 
+        }}>
             {children}
         </SalasContext.Provider>
     );
