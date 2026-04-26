@@ -2,7 +2,7 @@ import { View, Text, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useContext } from "react";
-import { SalasContext } from "../../SalasContext";
+import { SalasContext } from "../../context/SalasContext";
 
 export default function Salas(){
     const router = useRouter();

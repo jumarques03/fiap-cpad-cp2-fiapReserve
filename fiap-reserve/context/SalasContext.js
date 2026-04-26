@@ -12,21 +12,11 @@ export function SalasProvider({ children }) {
         { id: 5, nome: "Sala 507", texto: "Disponível hoje", disponivel: true }
     ]);
 
-
-    const [reservas, setReservas] = useState([]);
-
-
-    const adicionarReserva = (novaReserva) => {
-        setReservas((listaAtual) => [novaReserva, ...listaAtual]);
-    };
-
     return (
 
         <SalasContext.Provider value={{ 
             listaSalas, 
             setListaSalas, 
-            reservas, 
-            adicionarReserva 
         }}>
             {children}
         </SalasContext.Provider>

@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import { View, Text, StyleSheet, FlatList } from 'react-native';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
-import { SalasContext } from '../../SalasContext'; 
+import { SalasContext } from '../../context/SalasContext'; 
 
 const ReservaCard = ({ reserva }) => {
   return (

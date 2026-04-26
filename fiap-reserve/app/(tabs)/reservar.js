@@ -1,7 +1,7 @@
 import React, { useState, useContext } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { MaterialIcons, Ionicons } from '@expo/vector-icons';
-import { SalasContext } from '../../SalasContext'; 
+import { SalasContext } from '../../context/SalasContext'; 
 
 const salasDisponiveis = ['Sala 101', 'Sala 202', 'Sala 507', 'Sala 305'];
 const horariosEntrada = ['09:00', '10:00', '13:00', '15:00'];
