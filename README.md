@@ -63,17 +63,115 @@ git clone [https://github.com/jumarques03/fiap-cpad-cp1-FiapReserve.git](https:/
 
 ## e) Decisões Técnicas
 
-**Breve descrição de como o projeto foi estruturado:** O aplicativo foi estruturado utilizando o Expo Router com o padrão de rotas baseadas em arquivos, conforme apresentado em aula. A tela inicial de login foi implementada no arquivo index.js, separada das demais rotas da aplicação, para permitir a simulação de um fluxo de autenticação antes do acesso às telas principais do sistema. As funcionalidades centrais (Salas, Reservar e Minhas Reservas) foram organizadas dentro da pasta (tabs).
-Toda a estilização da interface foi desenvolvida utilizando o **StyleSheet** do React Native, garantindo padronização visual e melhor organização do código.
+### Breve descrição de como o projeto foi estruturado:
+O aplicativo foi estruturado utilizando o Expo Router com organização modular baseada em grupos de rotas, permitindo uma divisão clara entre autenticação e funcionalidades principais. As telas de Login e Cadastro foram organizadas dentro da pasta `(auth)`, responsável pelo fluxo de autenticação de usuários. Já as funcionalidades centrais do sistema, como Salas, Reservar e Minhas Reservas, foram estruturadas dentro da pasta `(tabs)`, utilizando navegação por abas para oferecer uma experiência mais intuitiva e organizada ao usuário autenticado.  
 
-**Quais hooks foram usados e para quê:**
-* **useRouter:** utilizado para realizar a navegação programática entre as telas.
-* **useContext:** utilizado para compartilhamento global de informações relacionadas às reservas entre diferentes telas do aplicativo, permitindo atualização imediata dos dados exibidos.
-* **useState:** utilizado para gerenciamento de estados locais das telas, como seleção de salas e horários.
+A estrutura principal do projeto foi organizada da seguinte forma:
+- `app/`: responsável pelas rotas, telas e layouts da aplicação.
+- `app/(auth)/`: telas de autenticação (Login e Cadastro).
+- `app/(tabs)/`: telas principais após autenticação.
+- `context/`: gerenciamento global de estados e persistência de dados com Context API e AsyncStorage.
+- `assets/`: recursos visuais, como imagens e ícones.  
 
-**Como a navegação foi organizada:** A navegação principal do aplicativo foi estruturada utilizando **Tabs Navigation**, proporcionando uma experiência mais intuitiva e acesso direto às telas Salas, Reservar e Minhas Reservas.
-O fluxo de utilização ocorre de forma sequencial e objetiva: inicialmente o usuário acessa a tela de login e, após a entrada no sistema, pode visualizar a disponibilidade das salas na aba Salas. Em seguida, é possível realizar uma reserva selecionando a sala e o horário desejado na tela Reservar. Por fim, o usuário pode acompanhar a confirmação e consultar os detalhes da reserva realizada na seção Minhas Reservas.
+No diretório `context`, foram centralizadas todas as principais regras de negócio da aplicação:
+- `AuthContext.js`: autenticação e sessão
+- `ReservasContext.js`: gerenciamento de reservas
+- `SalasContext.js`: gerenciamento das salas disponíveis  
 
+Essa organização permitiu melhor separação de responsabilidades, maior escalabilidade e facilidade no trabalho colaborativo entre os integrantes do grupo.  
+
+Toda a estilização foi desenvolvida com StyleSheet do React Native, garantindo padronização visual, organização e manutenção simplificada.
+
+### Quais Contexts foram criados e o que cada um gerencia:
+
+#### AuthContext:
+Responsável pelo gerenciamento global de autenticação dos usuários, incluindo:
+- Cadastro de usuários
+- Login
+- Logout
+- Persistência de sessão com AsyncStorage
+- Verificação de autenticação para navegação protegida  
+
+#### ReservasContext:
+Responsável pelo gerenciamento global das reservas realizadas, incluindo:
+- Criação de reservas
+- Cancelamento de reservas
+- Persistência das reservas no AsyncStorage
+- Sincronização de dados entre diferentes telas  
+
+#### SalasContext:
+Responsável pelo gerenciamento das salas disponíveis no sistema, incluindo:
+- Lista de salas
+- Status de disponibilidade
+- Atualização visual conforme reservas realizadas
+
+### Como a autenticação foi implementada:
+A autenticação foi implementada utilizando Context API integrada ao AsyncStorage. Durante o cadastro, os dados dos usuários (nome, e-mail, RM e senha) são validados e armazenados localmente.  
+
+No login:
+- O sistema valida se o usuário existe
+- Verifica se as credenciais estão corretas
+- Salva a sessão do usuário autenticado
+- Atualiza o estado global
+- Redireciona automaticamente para a área principal  
+
+Ao reiniciar o aplicativo:
+- A sessão persistida é carregada automaticamente
+- Usuários autenticados permanecem logados  
+
+Também foi implementado o logout, removendo a sessão ativa e retornando o usuário ao fluxo de autenticação.
+
+### Como o AsyncStorage foi utilizado (quais dados são persistidos e com quais chaves):
+O AsyncStorage foi utilizado para persistência local dos dados essenciais do aplicativo, garantindo funcionamento contínuo mesmo após o fechamento do app.
+
+#### Chaves utilizadas:
+- `usuarios`: armazena todos os usuários cadastrados
+- `sessao`: armazena o usuário atualmente autenticado
+- `reservas`: armazena todas as reservas realizadas
+
+#### Dados persistidos incluem:
+- Dados cadastrais dos usuários
+- Sessão de login
+- Reservas realizadas
+- Disponibilidade das salas com base nas reservas  
+
+Essa implementação garante:
+- Sessão persistente
+- Reservas salvas localmente
+- Atualização contínua das informações
+
+### Quais hooks foram usados e para quê:
+
+#### useRouter:
+Utilizado para navegação programática entre telas, redirecionamento após autenticação e controle de fluxo.
+
+#### useContext:
+Utilizado para compartilhamento global de autenticação, reservas e informações das salas.
+
+#### useState:
+Utilizado para gerenciamento de estados locais, como inputs, formulários, erros e seleções.
+
+#### useEffect:
+Utilizado para:
+- Carregar usuários cadastrados
+- Recuperar sessão persistida
+- Carregar reservas
+- Inicializar dados ao abrir o aplicativo
+
+### Como a navegação protegida foi implementada:
+A navegação foi organizada com separação entre rotas públicas e protegidas:
+
+- `(auth)`: Login e Cadastro
+- `(tabs)`: Salas, Reservar e Minhas Reservas
+
+No arquivo `_layout.js` principal:
+- O sistema verifica se existe uma sessão ativa
+- Caso exista, o usuário é direcionado automaticamente para `(tabs)`
+- Caso contrário, é redirecionado para `(auth)/login`
+
+Essa abordagem garante proteção de rotas e impede o acesso às funcionalidades principais sem autenticação válida, simulando um sistema real de controle de acesso.
+
+---
 
 ## f) Próximos Passos
 
