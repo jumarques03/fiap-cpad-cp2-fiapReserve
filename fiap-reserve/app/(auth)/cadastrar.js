@@ -1,4 +1,4 @@
-import { useState, useContext } from "react";
+import { useState, useContext, useRef } from "react";
 import {
   View,
   Text,
@@ -8,7 +8,8 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
-  Alert
+  Animated,
+  SafeAreaView
 } from "react-native";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
@@ -25,6 +26,7 @@ export default function Cadastrar() {
   const [confirmarSenha, setConfirmarSenha] = useState("");
   const [senhaVisivel, setSenhaVisivel] = useState(false);
   const [erros, setErros] = useState({});
+
 
   const validar = () => {
     const novosErros = {};
@@ -57,17 +59,59 @@ export default function Cadastrar() {
     return Object.keys(novosErros).length === 0;
   };
 
+  const shakeAnimation = useRef(new Animated.Value(0)).current;
+
+  const startShake = () => {
+    // 2. Configurar a sequência de animação
+    Animated.sequence([
+      Animated.timing(shakeAnimation, { toValue: 10, duration: 50, useNativeDriver: true }),
+      Animated.timing(shakeAnimation, { toValue: -10, duration: 50, useNativeDriver: true }),
+      Animated.timing(shakeAnimation, { toValue: 10, duration: 50, useNativeDriver: true }),
+      Animated.timing(shakeAnimation, { toValue: -10, duration: 50, useNativeDriver: true }),
+      Animated.timing(shakeAnimation, { toValue: 0, duration: 50, useNativeDriver: true }),
+    ]).start();
+  };
+
+  const slideAnim = useRef(new Animated.Value(-300)).current;
+  const [message, setMessage] = useState('');
+
+  const showAlert = (msg) => {
+    setMessage(msg);
+
+    // 2. Configurar a animação de entrada (Slide Down)
+    Animated.timing(slideAnim, {
+      toValue: 0, // Posição final (aparece)
+      duration: 500,
+      useNativeDriver: true, // Importante para performance
+    }).start(() => {
+      // 3. Após 2 segundos, esconder a animação (Slide Up)
+      setTimeout(() => {
+        Animated.timing(slideAnim, {
+          toValue: -100, // Posição inicial (some)
+          duration: 500,
+          useNativeDriver: true,
+        }).start();
+      }, 3000);
+    });
+  };
+
   const handleCadastro = async () => {
     if (validar()) {
       const novoUsuario = { nome, email, rm, senha };
       const sucesso = await cadastrarUsuario(novoUsuario);
 
       if (sucesso) {
-        Alert.alert("Sucesso", "Conta criada com sucesso!");
-        router.replace("/login");
+        showAlert('✅ Cadastro realizado com sucesso!')
+        
+        setTimeout(() => {
+            router.replace("/login");
+        }, 3000);
+
       } else {
         setErros({ email: "Este e-mail ou RM já está em uso" });
       }
+    } else {
+      startShake();
     }
   };
 
@@ -75,6 +119,19 @@ export default function Cadastrar() {
     <KeyboardAvoidingView
       style={styles.container}
     >
+      <Animated.View
+        style={[
+          styles.alertBox,
+          {
+            transform: [{ translateY: slideAnim }], // Vincula a animação
+          },
+        ]}
+      >
+        <SafeAreaView>
+          <Text style={styles.alertText}>{message}</Text>
+        </SafeAreaView>
+      </Animated.View>
+
       <ScrollView 
         contentContainerStyle={styles.scrollContainer}
         keyboardShouldPersistTaps="handled"
@@ -146,12 +203,15 @@ export default function Cadastrar() {
         </View>
         {erros.confirmarSenha && <Text style={styles.erro}>{erros.confirmarSenha}</Text>}
 
-        <TouchableOpacity style={styles.botao} onPress={handleCadastro}>
-          <Text style={styles.botaoTexto}>Cadastrar</Text>
-        </TouchableOpacity>
+        <Animated.View style={{ transform: [{ translateX: shakeAnimation }] }}>
+          <TouchableOpacity style={styles.botao} onPress={handleCadastro}>
+            <Text style={styles.botaoTexto}>Cadastrar</Text>
+          </TouchableOpacity>
+        </Animated.View>
 
         <TouchableOpacity onPress={() => router.back()}>
           <Text style={styles.linkLogin}>Já tem uma conta? Faça login</Text>
+          {}
         </TouchableOpacity>
       </ScrollView>
     </KeyboardAvoidingView>
@@ -179,5 +239,26 @@ const styles = StyleSheet.create({
   linkLogin: { color: "#F23064", textAlign: "center", marginTop: 24, fontSize: 16, fontWeight: "600" },
   senhaContainer: { flexDirection: "row", alignItems: "center", backgroundColor: "#404040", borderWidth: 1, borderColor: "#555", borderRadius: 12, marginBottom: 8, paddingRight: 10 },
   senhaInput: { flex: 1, padding: 14, fontSize: 16, color: "#FFFFFF" },
-  olho: { fontSize: 20 }
+  olho: { fontSize: 20 },
+  alertBox: {
+      position: 'absolute', // Fundamental para flutuar sobre o scroll
+      top: Platform.OS === 'ios' ? 40 : 20, // Ajuste para não cobrir a status bar
+      left: 20,
+      right: 20,
+      backgroundColor: '#00C853',
+      padding: 16,
+      borderRadius: 12,
+      zIndex: 9999,         // Garante que fique na frente de TUDO
+      elevation: 10,        // Sombra para Android
+      shadowColor: '#000',  // Sombra para iOS
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.3,
+      shadowRadius: 4.65,
+    },
+    alertText: {
+      color: '#FFFFFF',
+      fontWeight: 'bold',
+      textAlign: 'center',
+      fontSize: 16,
+    },
 });

@@ -1,4 +1,4 @@
-import { useState, useContext } from "react";
+import { useState, useContext, useRef, useCallback } from "react";
 import {
   View,
   Text,
@@ -8,8 +8,9 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  Animated,
 } from "react-native";
-import { useRouter } from "expo-router";
+import { useRouter, useFocusEffect } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { authContext } from "../../context/AuthContext";
 
@@ -22,6 +23,12 @@ export default function Login() {
   const [rm, setRM] = useState("");
   const [senhaVisivel, setSenhaVisivel] = useState(false);
   const [erros, setErros] = useState({});
+
+  useFocusEffect(
+    useCallback(() => {
+      setErros({}); 
+    }, [])
+  );
 
   const validar = () => {
     const novosErros = {};
@@ -57,6 +64,19 @@ export default function Login() {
     return Object.keys(novosErros).length === 0;
   };
 
+  const shakeAnimation = useRef(new Animated.Value(0)).current;
+
+  const startShake = () => {
+    // 2. Configurar a sequência de animação
+    Animated.sequence([
+      Animated.timing(shakeAnimation, { toValue: 10, duration: 50, useNativeDriver: true }),
+      Animated.timing(shakeAnimation, { toValue: -10, duration: 50, useNativeDriver: true }),
+      Animated.timing(shakeAnimation, { toValue: 10, duration: 50, useNativeDriver: true }),
+      Animated.timing(shakeAnimation, { toValue: -10, duration: 50, useNativeDriver: true }),
+      Animated.timing(shakeAnimation, { toValue: 0, duration: 50, useNativeDriver: true }),
+    ]).start();
+  };
+
   const handleLogin = async () => {
       const usuarioEncontrado = usuarios.find(
         (u) => u.email === email && u.senha === senha && u.rm === rm
@@ -66,6 +86,8 @@ export default function Login() {
         // É essencial salvar a sessão no contexto antes de mudar de tela
         await salvarSessao(usuarioEncontrado); 
         router.replace("/(tabs)/salas");
+      } else {
+        startShake();
       }
   };
 
@@ -137,9 +159,11 @@ export default function Login() {
         </View>
         {erros.senha && <Text style={styles.erro}>{erros.senha}</Text>}
 
-        <TouchableOpacity style={styles.botao} onPress={handleLogin}>
-          <Text style={styles.botaoTexto}>Entrar</Text>
-        </TouchableOpacity>
+        <Animated.View style={{ transform: [{ translateX: shakeAnimation }] }}>
+          <TouchableOpacity style={styles.botao} onPress={handleLogin}>
+            <Text style={styles.botaoTexto}>Entrar</Text>
+          </TouchableOpacity>
+        </Animated.View>
 
         <TouchableOpacity onPress={() => router.push("/(auth)/cadastrar")}>
           <Text style={styles.linkCadastro}>Não tem conta? Cadastre-se</Text>
