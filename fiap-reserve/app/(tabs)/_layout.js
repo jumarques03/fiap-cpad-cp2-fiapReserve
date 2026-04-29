@@ -37,6 +37,13 @@ export default function Layout() {
       />
       
       <Tabs.Screen
+        name="disponibilidade"
+        options={{
+          href: null
+        }}
+      />
+      
+      <Tabs.Screen
         name="minhas-reservas"
         options={{
           title: 'Minhas Reservas',
