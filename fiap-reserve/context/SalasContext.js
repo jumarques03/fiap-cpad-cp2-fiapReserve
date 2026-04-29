@@ -3,7 +3,6 @@ import { createContext, useState } from "react";
 export const SalasContext = createContext();
 
 export function SalasProvider({ children }) {
-
     const [listaSalas, setListaSalas] = useState([
         { id: 1, nome: "Sala 101", texto: "Disponível hoje", disponivel: true },
         { id: 2, nome: "Sala 305", texto: "Disponível hoje", disponivel: true },
@@ -12,11 +11,23 @@ export function SalasProvider({ children }) {
         { id: 5, nome: "Sala 507", texto: "Disponível hoje", disponivel: true }
     ]);
 
-    return (
+    const [reservas, setReservas] = useState([]);
 
+    const adicionarReserva = (novaReserva) => {
+        setReservas((listaAtual) => [novaReserva, ...listaAtual]);
+    };
+
+    const removerReserva = (id) => {
+        setReservas((listaAtual) => listaAtual.filter(reserva => reserva.id !== id));
+    };
+
+    return (
         <SalasContext.Provider value={{ 
             listaSalas, 
             setListaSalas, 
+            reservas,
+            adicionarReserva,
+            removerReserva
         }}>
             {children}
         </SalasContext.Provider>

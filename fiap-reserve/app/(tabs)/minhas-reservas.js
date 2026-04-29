@@ -1,33 +1,47 @@
 import React, { useContext } from 'react';
-import { View, Text, StyleSheet, FlatList } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, Alert } from 'react-native';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { SalasContext } from '../../context/SalasContext'; 
 
 const ReservaCard = ({ reserva }) => {
+  const { removerReserva } = useContext(SalasContext); 
+
+  const handleCancelar = () => {
+    Alert.alert(
+      "Cancelar Reserva",
+      `Deseja realmente cancelar a reserva da ${reserva.sala}?`,
+      [
+        { text: "Não", style: "cancel" },
+        { text: "Sim", onPress: () => removerReserva(reserva.id), style: "destructive" }
+      ]
+    );
+  };
+
   return (
     <View style={styles.card}>
       <View style={styles.contentLeft}>
         <View style={styles.iconCircle}>
-          <Ionicons name="apps" size={24} color="#FF385C" />
+          <Ionicons name="laptop-outline" size={24} color="#FF385C" />
         </View>
         
         <View style={styles.textContainer}>
           <Text style={styles.cardRoomName}>{reserva.sala}</Text>
           
           <View style={styles.dateTimeRow}>
-            <MaterialIcons name="date-range" size={14} color="#AAAAAA" />
+            <MaterialIcons name="calendar-today" size={16} color="#AAAAAA" />
             <Text style={styles.cardDate}>{reserva.data}</Text>
-          </View>
-          
-          <View style={styles.dateTimeRow}>
-            <MaterialIcons name="schedule" size={14} color="#AAAAAA" />
-            <Text style={styles.cardTime}>{reserva.horaEntrada}</Text>
           </View>
         </View>
       </View>
       
-      <View style={styles.statusBadge}>
-        <Text style={styles.statusBadgeText}>{reserva.status}</Text>
+      <View style={styles.contentRight}>
+        <View style={styles.statusBadge}>
+          <Text style={styles.statusBadgeText}>{reserva.status}</Text>
+        </View>
+
+        <TouchableOpacity style={styles.cancelButton} onPress={handleCancelar}>
+          <Text style={styles.cancelButtonText}>Cancelar reserva</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -82,9 +96,9 @@ const styles = StyleSheet.create({
   },
   card: {
     backgroundColor: '#262626', 
-    borderRadius: 15,
+    borderRadius: 20, 
     padding: 15,
-    marginVertical: 8,
+    marginVertical: 10,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center', 
@@ -96,6 +110,10 @@ const styles = StyleSheet.create({
     alignItems: 'center', 
     flex: 1,
   },
+  contentRight: {
+    alignItems: 'flex-end',
+    justifyContent: 'center',
+  },
   iconCircle: {
     width: 48,
     height: 48,
@@ -105,43 +123,51 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   textContainer: {
-    marginLeft: 15,
+    marginLeft: 12,
     justifyContent: 'center',
   },
   cardRoomName: {
     color: '#FFFFFF',
     fontSize: 18,
     fontWeight: 'bold',
-    marginBottom: 2,
+    marginBottom: 4,
   },
   dateTimeRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 2,
   },
   cardDate: {
     color: '#AAAAAA',
-    fontSize: 13,
-    marginLeft: 5,
-  },
-  cardTime: {
-    color: '#AAAAAA',
-    fontSize: 13,
+    fontSize: 14,
     marginLeft: 5,
   },
   statusBadge: {
-    backgroundColor: 'rgba(30, 56, 31, 0.5)', 
+    backgroundColor: 'rgba(30, 56, 31, 0.3)', 
     paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 20,
-    borderColor: '#39ff14', 
+    paddingVertical: 4,
+    borderRadius: 15,
+    borderColor: '#00C853', 
     borderWidth: 1,
+    marginBottom: 8,
   },
   statusBadgeText: {
-    color: '#39ff14', 
+    color: '#00C853', 
+    fontSize: 12,
+    fontWeight: 'bold',
+  },
+  cancelButton: {
+    backgroundColor: '#F23064',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 15,
+    width: 110,
+    alignItems: 'center',
+  },
+  cancelButtonText: {
+    color: '#FFFFFF',
     fontSize: 11,
     fontWeight: 'bold',
-    textTransform: 'uppercase',
+    textAlign: 'center',
   },
   emptyContainer: {
     flex: 1,

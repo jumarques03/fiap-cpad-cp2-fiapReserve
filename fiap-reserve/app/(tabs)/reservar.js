@@ -1,49 +1,59 @@
 import React, { useState, useContext } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import { MaterialIcons, Ionicons } from '@expo/vector-icons';
+import { Calendar, LocaleConfig } from 'react-native-calendars';
 import { SalasContext } from '../../context/SalasContext'; 
 
+LocaleConfig.locales['pt-br'] = {
+  monthNames: ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'],
+  monthNamesShort: ['Jan.','Fev.','Mar','Abr','Mai','Jun','Jul.','Ago','Set.','Out.','Nov.','Dez.'],
+  dayNames: ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'],
+  dayNamesShort: ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'],
+  today: 'Hoje'
+};
+LocaleConfig.defaultLocale = 'pt-br';
+
 const salasDisponiveis = ['Sala 101', 'Sala 202', 'Sala 507', 'Sala 305'];
-const horariosEntrada = ['09:00', '10:00', '13:00', '15:00'];
-const horariosSaida = ['11:00', '14:00', '17:00', '22:00'];
 
 export default function ReservarScreen() {
-  const { salas, adicionarReserva } = useContext(SalasContext);
+  const { adicionarReserva } = useContext(SalasContext);
   const [salaSelecionada, setSalaSelecionada] = useState(null);
-  const [horaEntrada, setHoraEntrada] = useState(null);
-  const [horaSaida, setHoraSaida] = useState(null);
+  const [dataSelecionada, setDataSelecionada] = useState('');
 
   const handleConfirmarReserva = () => {
-    if (!salaSelecionada || !horaEntrada || !horaSaida) {
-      alert('Por favor, selecione a sala, entrada e saída.');
+    if (!salaSelecionada || !dataSelecionada) {
+      Alert.alert('Erro', 'Por favor, selecione uma sala e uma data.');
       return;
     }
 
     const novaReserva = {
       id: Date.now().toString(), 
       sala: salaSelecionada,
-      data: new Date().toLocaleDateString('pt-BR'), 
-      horaEntrada,
-      horaSaida,
+      data: dataSelecionada.split('-').reverse().join('/'), 
+      horaEntrada: 'Dia Inteiro', 
       status: 'Confirmada',
     };
+
     adicionarReserva(novaReserva); 
-    alert(`Reserva confirmada para a ${salaSelecionada}!`);
+    Alert.alert('Sucesso', `Reserva confirmada para a ${salaSelecionada} no dia ${novaReserva.data}!`);
  
     setSalaSelecionada(null);
-    setHoraEntrada(null);
-    setHoraSaida(null);
+    setDataSelecionada('');
   };
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 50 }}>
       <Text style={styles.mainTitle}>Reservar sala</Text>
-      <Text style={styles.subtitle}>Escolha uma sala e o horário desejado</Text>
+      <Text style={styles.subtitle}>Escolha uma sala para reservar o dia inteiro</Text>
 
+      {/* SEÇÃO: SELEÇÃO DE SALA */}
       <View style={styles.sectionHeader}>
-        <Ionicons name="apps" size={24} color="#FF385C" style={styles.iconCircle} />
+        <View style={styles.iconCircle}>
+          <Ionicons name="apps" size={24} color="#FF385C" />
+        </View>
         <Text style={styles.sectionTitle}>Selecione a sala</Text>
       </View>
+      
       <View style={styles.optionsGrid}>
         {salasDisponiveis.map(sala => (
           <TouchableOpacity
@@ -56,36 +66,41 @@ export default function ReservarScreen() {
         ))}
       </View>
 
+      {/* SEÇÃO: CALENDÁRIO */}
       <View style={styles.sectionHeader}>
-        <MaterialIcons name="schedule" size={24} color="#FF385C" style={styles.iconCircle} />
-        <Text style={styles.sectionTitle}>Horário de entrada</Text>
-      </View>
-      <View style={styles.optionsGrid}>
-        {horariosEntrada.map(hora => (
-          <TouchableOpacity
-            key={hora}
-            style={[styles.optionButton, horaEntrada === hora && styles.optionButtonSelected]}
-            onPress={() => setHoraEntrada(hora)}
-          >
-            <Text style={[styles.optionText, horaEntrada === hora && styles.optionTextSelected]}>{hora}</Text>
-          </TouchableOpacity>
-        ))}
+        <View style={styles.iconCircle}>
+          <MaterialIcons name="calendar-today" size={24} color="#FF385C" />
+        </View>
+        <Text style={styles.sectionTitle}>Selecione uma data disponível</Text>
       </View>
 
-      <View style={styles.sectionHeader}>
-        <MaterialIcons name="schedule" size={24} color="#FF385C" style={styles.iconCircle} />
-        <Text style={styles.sectionTitle}>Horário de saída</Text>
-      </View>
-      <View style={styles.optionsGrid}>
-        {horariosSaida.map(hora => (
-          <TouchableOpacity
-            key={hora}
-            style={[styles.optionButton, horaSaida === hora && styles.optionButtonSelected]}
-            onPress={() => setHoraSaida(hora)}
-          >
-            <Text style={[styles.optionText, horaSaida === hora && styles.optionTextSelected]}>{hora}</Text>
-          </TouchableOpacity>
-        ))}
+      <View style={styles.calendarContainer}>
+        <Calendar
+          theme={{
+            backgroundColor: '#262626',
+            calendarBackground: '#262626',
+            textSectionTitleColor: '#b6c1cd',
+            selectedDayBackgroundColor: '#FF385C',
+            selectedDayTextColor: '#ffffff',
+            todayTextColor: '#FF385C',
+            dayTextColor: '#d9e1e8',
+            textDisabledColor: '#4d4d4d',
+            dotColor: '#FF385C',
+            monthTextColor: '#ffffff',
+            indicatorColor: 'white',
+            arrowColor: '#FF385C',
+          }}
+          onDayPress={day => setDataSelecionada(day.dateString)}
+          markedDates={{
+            [dataSelecionada]: { selected: true, disableTouchEvent: true },
+            '2026-03-17': { marked: true, dotColor: '#FF385C' },
+          }}
+        />
+        <View style={styles.legendaContainer}>
+          <Text style={styles.legendaText}>Legenda: </Text>
+          <View style={styles.dot} />
+          <Text style={styles.legendaText}>Indisponível</Text>
+        </View>
       </View>
 
       <TouchableOpacity style={styles.confirmButton} onPress={handleConfirmarReserva}>
@@ -95,24 +110,17 @@ export default function ReservarScreen() {
   );
 }
 
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#1a1a1a', 
     padding: 20,
-    paddingTop: 50, 
-  },
-  breadcrumbTitle: {
-    color: '#888',
-    fontSize: 14,
-    textTransform: 'uppercase',
+    paddingTop: 60, 
   },
   mainTitle: {
     color: '#FFFFFF',
     fontSize: 28,
     fontWeight: 'bold',
-    marginTop: 10,
   },
   subtitle: {
     color: '#AAAAAA',
@@ -132,7 +140,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#333333',
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 10, 
   },
   sectionTitle: {
     color: '#FFFFFF',
@@ -144,7 +151,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
-    marginBottom: 20,
+    marginBottom: 10,
   },
   optionButton: {
     width: '48%', 
@@ -168,13 +175,36 @@ const styles = StyleSheet.create({
     color: '#FF385C',
     fontWeight: '700',
   },
+  calendarContainer: {
+    backgroundColor: '#262626',
+    borderRadius: 15,
+    padding: 10,
+    overflow: 'hidden',
+  },
+  legendaContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 15,
+    paddingHorizontal: 10,
+  },
+  legendaText: {
+    color: '#AAAAAA',
+    fontSize: 14,
+  },
+  dot: {
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    backgroundColor: '#FF385C',
+    marginHorizontal: 5,
+  },
   confirmButton: {
     backgroundColor: '#FF385C',
     paddingVertical: 18,
     borderRadius: 10,
     alignItems: 'center',
-    marginVertical: 30,
-    marginBottom: 60, 
+    marginTop: 30,
+    marginBottom: 40,
   },
   confirmButtonText: {
     color: '#FFFFFF',
