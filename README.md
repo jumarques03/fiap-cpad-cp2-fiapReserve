@@ -193,14 +193,3 @@ No fluxo de cadastro:
 - Caso o cadastro seja concluído com sucesso, um alerta animado é exibido temporariamente na parte superior da tela, seguido do redirecionamento automático para a tela de login.
 
 Essa abordagem permitiu melhorar a comunicação visual do sistema sem depender de bibliotecas externas, mantendo o projeto leve, organizado e tecnicamente consistente.
-
---- 
-
-## **g) Próximos Passos**
-
-Caso houvesse mais tempo para a continuidade do projeto, o grupo implementaria as seguintes melhorias:
-
-* **Integração com Backend e Banco de Dados:** Substituir a Context API (armazenamento em memória) por uma API real (como Firebase ou Node.js) para persistência definitiva das reservas.
-* **Autenticação Real:** Validar as credenciais de login (RM e Senha) com um banco de usuários.
-* **Gestão de "Minhas Reservas":** Dar funcionalidade à aba de histórico, permitindo ao usuário visualizar suas reservas ativas e a opção de cancelá-las.
-* **Filtros Avançados:** Permitir a busca de salas por tipo (Andar, Laboratório, Maker, Teórica), capacidade de alunos e seleção de blocos de horários específicos.
