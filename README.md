@@ -51,7 +51,7 @@ git clone [https://github.com/jumarques03/fiap-cpad-cp1-FiapReserve.git](https:/
 
 **Telas do app:**
 
-<img src="fiap-reserve/assets/image.png" width="180"/>
+<img src="fiap-reserve/assets/image.png" width="300"/>
 
 #### **Demonstração do fluxo principal do app:**
 [Clique aqui para assistir a demonstração](https://drive.google.com/file/d/1gFa9835UYajSBvto9NdALXPUk3EeqhEH/view?usp=sharing)
